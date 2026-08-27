@@ -41,6 +41,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set short SHA
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    
+      - name: Verify
+        run: echo $SHORT_SHA
 
       - name: Build and push image
         uses: docker/build-push-action@v6
@@ -48,4 +54,7 @@ jobs:
           context: .
           push: true
           #tags: ghcr.io/${{ github.repository }}:latest
-          tags: ghcr.io/setonjay/github-actions-zero-to-hero:latest
+          tags: |
+            ghcr.io/setonjay/github-actions-zero-to-hero:latest
+            ghcr.io/setonjay/github-actions-zero-to-hero:${{ github.ref_name }}
+            ghcr.io/setonjay/github-actions-zero-to-hero:${{ env.SHORT_SHA }}
