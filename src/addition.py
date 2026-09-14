@@ -8,12 +8,6 @@ start_url = 'https://bullcarpwebsite.local/server/auth'
 aws_access = 'info8372t8273tr(*56342214&$&&T&nwodnornfo38'
 AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
 AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-PRIVATE_KEY = """
------BEGIN RSA PRIVATE KEY-----
-MIICXQIBAAKBgQC7FAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKE
-FAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKE
------END RSA PRIVATE KEY-----
-"""
 
 def add(a: any, b: any):
     ''' function-docstring: Basic add function '''
