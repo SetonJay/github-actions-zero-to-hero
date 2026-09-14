@@ -45,5 +45,5 @@ jobs:
           scanners: vuln,secret
           severity: HIGH,CRITICAL
           exit-code: 1
-          format: json
-#          skip-dirs: src/__pycache__
+          format: table
+          skip-dirs: src/__pycache__
