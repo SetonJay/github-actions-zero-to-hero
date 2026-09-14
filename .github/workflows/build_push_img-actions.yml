@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.10", "3.12"]
+        python-version: ["3.12.4"]
 
     steps:
       - name: Checkout Security CI commit
