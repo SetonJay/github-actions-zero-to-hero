@@ -6,4 +6,3 @@ pluggy==1.6.0
 Pygments==2.21.0
 pytest==8.4.1
 requests==2.32.3
-urllib3==2.7.0
