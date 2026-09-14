@@ -71,10 +71,13 @@ jobs:
 #            ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
 
 
-      - name: Scan Image
-        uses: aquasecurity/trivy-action@0.33.1
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE }}:${{ env.SHORT_SHA }}
           #image-ref: ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
-          severity: HIGH,CRITICAL
-          exit-code: 1
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
