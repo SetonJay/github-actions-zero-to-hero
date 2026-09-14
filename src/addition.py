@@ -18,7 +18,6 @@ def test_add():
     ''' function-docstring: Basic test for add fuction'''
     assert add(1, 2) == 3
     assert add(1, -1) == 0
-    assert add(3, -1) == 0
 print(
         f"\nExecution Time: {end_time - start_time} seconds to {start_url} with key {aws_access} "
         )
