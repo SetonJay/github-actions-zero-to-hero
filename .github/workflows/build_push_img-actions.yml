@@ -1,16 +1,19 @@
-name: Build and Push
+name: Build, Push and Scan Image
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows:
+      - Security CI
+    types:
+      - completed
 
 permissions:
-    contents: read
-    packages: write
+  contents: read
+  packages: write
 
 jobs:
-  docker:
+  build_push_scan_image:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -18,8 +21,11 @@ jobs:
         python-version: ["3.10", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout Security CI commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -41,20 +47,34 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Set short SHA
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-    
+
+      - name: Set image tags
+        run: |
+          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          export github.repository = github_lowercase.repository
+
       - name: Verify
-        run: echo $SHORT_SHA
+        run: |
+          echo "Image: $IMAGE"
+          echo "Commit: $SHORT_SHA"
 
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          #tags: ghcr.io/${{ github.repository }}:latest
           tags: |
-            ghcr.io/setonjay/github-actions-zero-to-hero:latest
-            ghcr.io/setonjay/github-actions-zero-to-hero:${{ github.ref_name }}
-            ghcr.io/setonjay/github-actions-zero-to-hero:${{ env.SHORT_SHA }}
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ env.SHORT_SHA }}
+#            ghcr.io/${{ github.repository }}:latest
+#            ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
+
+
+      - name: Scan Image
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ env.SHORT_SHA }}
+          #image-ref: ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
+          severity: HIGH,CRITICAL
+          exit-code: 1
