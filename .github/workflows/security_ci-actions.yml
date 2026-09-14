@@ -28,7 +28,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: javascript
+          languages: python
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v4
