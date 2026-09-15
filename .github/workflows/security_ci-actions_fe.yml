@@ -1,0 +1,52 @@
+name: Security CI FE
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+  packages: write
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      ### Checkout ###
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      ### Secret Scan ###
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      ### SAST - CodeQL ###
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+
+      ### Dependency / Vulnerability Scan ###
+      - name: Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: CRITICAL
+          exit-code: 1
+          format: table
